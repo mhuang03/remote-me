@@ -24,6 +24,11 @@ function SocketManager:connect()
       os.sleep(5)
     end
   until socket
+
+  while not socket.finishConnect() do
+    os.sleep(0.1)
+  end
+  
   print("Connected.")
   self.sock = socket
 end
