@@ -13,6 +13,7 @@ function SocketManager:new()
   local o = {sock=nil, queue={}}
   setmetatable(o, self)
   self.__index = self
+  o:connect()
   o:processQueue()
   return o
 end
