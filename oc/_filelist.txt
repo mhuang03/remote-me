@@ -1,0 +1,2 @@
+https://raw.githubusercontent.com/mhuang03/remote-me/main/oc/json.lua
+https://raw.githubusercontent.com/mhuang03/remote-me/main/oc/autoupdate.lua
