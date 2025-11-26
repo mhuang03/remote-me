@@ -23,6 +23,5 @@ for filename in io.lines("_filelist.txt") do
   shell.execute("wget https://raw.githubusercontent.com/mhuang03/remote-me/main/oc/" .. filename)
 end
 
-shell.setWorkingDirectory("/home/")
 filesystem.remove("/home/install.lua")
 print("Done!")
