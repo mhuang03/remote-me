@@ -13,6 +13,14 @@ end
 
 local SocketManager = {}
 
+function SocketManager:isAlive()
+  if not self.sock then
+    return false
+  end
+  local status, err = pcall(self.sock.stream.socket.finishConnect)
+  return status and not err
+end
+
 function SocketManager:connect()
   local socket, reason
   repeat
@@ -37,9 +45,7 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  local connectionAlive = self.sock.stream.socket.finishConnect()
-  print("Connection alive: " .. tostring(connectionAlive))
-  if not connectionAlive then
+  if not self:isAlive() then
     print("Connection lost. Reconnecting...")
     self.sock:close()
     self:connect()
