@@ -60,3 +60,5 @@ local timer = event.timer(1, function()
     sock = connect()
   end
 end, math.huge)
+
+while (true) do end
