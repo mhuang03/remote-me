@@ -33,7 +33,7 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  if not self.sock:finishConnect() then
+  if not self.sock then
     self:connect()
   end
 
