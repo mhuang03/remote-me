@@ -34,7 +34,8 @@ end
 local function sendUpdate(sock)
   local payload = getItemsData()[1]
   print("Sending payload: " .. payload)
-  return sock:write(payload .. "\n")
+  sock:write(payload .. "\n")
+  sock:flush()
 end
 
 
@@ -59,9 +60,16 @@ local thread = require("thread")
 local t1 = thread.create(function()
   local sock = connect()
   while (true) do
-    if sendUpdate(sock) == 0 or (not sock) then
+    if not sock then
       print("Connection lost. Reconnecting...")
       sock = connect()
+    else
+      local status, err = pcall(sendUpdate, sock)
+      if not status then
+        print("Error sending update: " .. tostring(err))
+        sock:close()
+        sock = nil
+      end
     end
     os.sleep(1)
   end
