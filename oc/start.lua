@@ -1,4 +1,6 @@
 local component = require("component")
+local json = require("json")
+local thread = require("thread")
 local SocketManager = require("socketmanager")
 
 
@@ -28,7 +30,6 @@ end
 
 local sm = SocketManager:new()
 
-local thread = require("thread")
 local t1 = thread.create(function()
   while (true) do
     local payload = getItemsData()[1]

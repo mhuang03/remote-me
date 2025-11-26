@@ -5,6 +5,10 @@ local event = require("event")
 local HOST = os.getenv("REMOTE_ME_HOST")
 local PORT = 21504
 
+if not HOST then
+  error("REMOTE_ME_HOST environment variable must be set")
+end
+
 
 
 local SocketManager = {}
@@ -37,14 +41,14 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  if not self.sock.finishConnect() then
-    self.connect()
+  if not self.sock:finishConnect() then
+    self:connect()
   end
 
-  local bytesWritten = sock:write(data .. "\n")
+  local bytesWritten = self.sock:write(data .. "\n")
   if bytesWritten == 0 then
     print("Connection lost during write.")
-    sock:close()
+    self.sock:close()
     self.sock = nil
     return false
   end
@@ -54,7 +58,7 @@ end
 function SocketManager:processQueue()
   event.timer(0.1, function()
     if #self.queue > 0 then
-      local payload = queue[1]
+      local payload = self.queue[1]
       local success = self:sendData(payload)
       if success then
         table.remove(self.queue, 1)
