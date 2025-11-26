@@ -8,7 +8,9 @@ shell.execute("rm -rf *")
 
 print("Downloading...")
 shell.execute("wget https://raw.githubusercontent.com/mhuang03/remote-me/main/oc/_filelist.txt")
-shell.execute("wget -i _filelist.txt")
+for filename in io.lines("_filelist.txt") do
+  shell.execute("wget https://raw.githubusercontent.com/mhuang03/remote-me/main/oc/" .. filename)
+end
 
 shell.setWorkingDirectory("/home/")
 print("Done!")
