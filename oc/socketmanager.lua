@@ -63,4 +63,5 @@ function SocketManager:processQueue()
 end
   
 
-return {SocketManager=SocketManager}
+
+return SocketManager

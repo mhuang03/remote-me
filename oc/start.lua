@@ -1,5 +1,5 @@
 local component = require("component")
-local remote = require("remote")
+local SocketManager = require("socketmanager")
 
 
 
@@ -26,7 +26,7 @@ end
 
 
 
-local sm = remote.SocketManager:new()
+local sm = SocketManager:new()
 
 local thread = require("thread")
 local t1 = thread.create(function()
