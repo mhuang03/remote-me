@@ -26,14 +26,14 @@ local function getItemsData()
   for k, item in pairs(items) do
     table.insert(items_enc, json.encode(item))
   end
-  return table.concat(items_enc, ", ")
+  return items_enc
 end
 
 
 
 local function sendUpdate(sock)
   local payload = getItemsData()
-  return sock:write(payload)
+  return sock:write(payload[0])
 end
 
 
