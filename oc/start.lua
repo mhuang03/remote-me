@@ -33,7 +33,7 @@ local sm = SocketManager:new()
 local t1 = thread.create(function()
   while (true) do
     local payload = getItemsData()[1]
-    print("Queueing payload: " .. payload)
+    print("Sending payload: " .. payload)
     local status = sm:sendData(payload)
     os.sleep(1)
   end
