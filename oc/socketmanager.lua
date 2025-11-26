@@ -1,6 +1,7 @@
-local internet = require("internet")
+local component = require("component")
 local json = require("json")
 local event = require("event")
+local internet = component.internet
 
 local HOST = os.getenv("REMOTE_ME_HOST")
 local PORT = 21504
