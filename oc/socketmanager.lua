@@ -28,7 +28,7 @@ function SocketManager:connect()
   while not socket.finishConnect() do
     os.sleep(0.1)
   end
-  
+
   print("Connected.")
   self.sock = socket
 end
@@ -56,9 +56,12 @@ function SocketManager:processQueue()
   event.timer(0.1, function()
     if #self.queue > 0 then
       local payload = self.queue[1]
+      print("Sending payload: " .. payload)
       local success = self:sendData(payload)
       if success then
         table.remove(self.queue, 1)
+      else
+        print("Sending failed.")
       end
     end
   end, math.huge)
