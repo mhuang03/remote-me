@@ -32,9 +32,15 @@ function SocketManager:connect()
     end
   until socket
 
-  while not socket.stream.socket.finishConnect() do
+  local status, err
+  do
+    status, err = pcall(self.sock.stream.socket.finishConnect)
+    if err then
+      print("Failed to finish TCP connection: " .. tostring(err))
+      return
+    end
     os.sleep(0.1)
-  end
+  until status
 
   print("Connected to " .. HOST .. ":" .. PORT)
   self.sock = socket
