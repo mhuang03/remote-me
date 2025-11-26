@@ -54,14 +54,17 @@ local function connect()
   return sock
 end
 
-local sock = connect()
-local timer = event.timer(1, function()
-  if not sendUpdate(sock) then
-    print("Connection lost. Reconnecting...")
-    sock = connect()
-  end
-end, math.huge)
 
-while (true) do 
-  os.sleep(0.05)
-end
+local thread = require("thread")
+local t1 = thread.create(function()
+  local sock = connect()
+  while true do
+    if not sendUpdate(sock) then
+      print("Connection lost. Reconnecting...")
+      sock = connect()
+    end
+    os.sleep(1)
+  end
+end)
+
+thread.waitForAny({t1})
