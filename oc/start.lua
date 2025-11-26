@@ -34,7 +34,7 @@ end
 local function sendUpdate(sock)
   local payload = getItemsData()[1]
   print("Sending payload: " .. payload)
-  local ok, num_bytes = sock:write(payload .. "\n")
+  sock:write(payload .. "\n")
   sock:flush()
 end
 
