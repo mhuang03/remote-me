@@ -32,7 +32,7 @@ function SocketManager:connect()
     end
   until socket
 
-  local status, err
+  local status, ret
   repeat
     status, ret = pcall(socket.stream.socket.finishConnect)
     if not status then
@@ -42,7 +42,7 @@ function SocketManager:connect()
     else
       os.sleep(0.1)
     end
-  until status and not err
+  until status and ret
 
   print("Connected to " .. HOST .. ":" .. PORT)
   self.sock = socket
@@ -60,8 +60,16 @@ function SocketManager:sendData(data)
   end
 
   data = data .. "\n"
-  local status, err = pcall(self.sock.write, self.sock, data)
-  self.sock:flush()
+  local status, ret
+  repeat
+    status, ret = pcall(self.sock.write, self.sock, data)
+    if not status then
+      print("Failed to send data: " .. tostring(ret))
+      print("Reconnecting...")
+      self.sock:close()
+      self:connect()
+    end
+  until status
 end
 
 function SocketManager:processQueue()
