@@ -1,4 +1,4 @@
 json.lua
-autoupdate.lua
+update.lua
 start.lua
 socketmanager.lua
