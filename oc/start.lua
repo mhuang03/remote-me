@@ -26,7 +26,7 @@ end
 
 
 
-local sm = remote.createSocketManager()
+local sm = remote.SocketManager:new()
 
 local thread = require("thread")
 local t1 = thread.create(function()

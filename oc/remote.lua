@@ -7,56 +7,60 @@ local PORT = 21504
 
 
 
-local function createSocketManager()
-  local SocketManager = {}
-  local sock = nil
+local SocketManager = {}
 
-  local queue = {}
-  
-  function SocketManager:connect()
-    local socket, reason
-    repeat
-      socket, reason = internet.connect(HOST, PORT)
-      if reason then
-        print("Failed to open TCP connection: " .. tostring(reason))
-        print("Trying again in 5 seconds...")
-        os.sleep(5)
-      end
-    until socket
-    print("Connected.")
-    sock = socket
-  end
+function SocketManager:new()
+  local o = {sock=nil, queue={}}
+  setmetatable(o, self)
+  self.__index = self
+  o:processQueue()
+  return o
+end
 
-  function SocketManager:queueData(data)
-    table.insert(queue, data)
-  end
-  
-  function SocketManager:sendData(data)
-    if not sock.finishConnect() then
-      self.connect()
+function SocketManager:connect()
+  local socket, reason
+  repeat
+    socket, reason = internet.connect(HOST, PORT)
+    if reason then
+      print("Failed to open TCP connection: " .. tostring(reason))
+      print("Trying again in 5 seconds...")
+      os.sleep(5)
     end
+  until socket
+  print("Connected.")
+  self.sock = socket
+end
 
-    local bytesWritten = sock:write(data .. "\n")
-    if bytesWritten == 0 then
-      print("Connection lost during write.")
-      sock:close()
-      sock = nil
-      return false
-    end
-    return true
+function SocketManager:queueData(data)
+  table.insert(self.queue, data)
+end
+
+function SocketManager:sendData(data)
+  if not self.sock.finishConnect() then
+    self.connect()
   end
 
+  local bytesWritten = sock:write(data .. "\n")
+  if bytesWritten == 0 then
+    print("Connection lost during write.")
+    sock:close()
+    self.sock = nil
+    return false
+  end
+  return true
+end
+
+function SocketManager:processQueue()
   event.timer(0.1, function()
-    if #queue > 0 then
+    if #self.queue > 0 then
       local payload = queue[1]
       local success = self:sendData(payload)
       if success then
-        table.remove(queue, 1)
+        table.remove(self.queue, 1)
       end
     end
   end, math.huge)
-  
-  return SocketManager
 end
+  
 
-return {createSocketManager = createSocketManager}
+return {SocketManager=SocketManager}
