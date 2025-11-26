@@ -62,4 +62,6 @@ local timer = event.timer(1, function()
   end
 end, math.huge)
 
-while (true) do end
+while (true) do 
+  os.sleep(0.05)
+end
