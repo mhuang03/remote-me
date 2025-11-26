@@ -1,10 +1,5 @@
 local component = require("component")
-local internet = require("internet")
-local json = require("json")
-local event = require("event")
-
-local HOST = os.getenv("REMOTE_ME_HOST")
-local PORT = 21504
+local remote = require("remote")
 
 
 
@@ -31,47 +26,13 @@ end
 
 
 
-local function sendUpdate(sock)
-  local payload = getItemsData()[1]
-  print("Sending payload: " .. payload)
-  local num_bytes = sock:write(payload .. "\n")
-  sock:flush()
-  return num_bytes
-end
-
-
-
-local function connect()
-  local sock, reason
-  repeat
-    sock, reason = internet.open(HOST, PORT)
-    if reason then
-      print("Failed to open TCP connection: " .. tostring(reason))
-      print("Trying again in 5 seconds...")
-      os.sleep(5)
-    end
-  until sock
-  sock:setTimeout(0.05)
-  print("Connected.")
-  return sock
-end
-
+local sm = remote.createSocketManager()
 
 local thread = require("thread")
 local t1 = thread.create(function()
-  local sock = connect()
   while (true) do
-    if not sock then
-      print("Connection lost. Reconnecting...")
-      sock = connect()
-    else
-      local status, ret = pcall(sendUpdate, sock)
-      if (not status) or (status and ret == 0) then
-        print("Error sending update: " .. tostring(ret))
-        sock:close()
-        sock = nil
-      end
-    end
+    local payload = getItemsData()[1]
+    local status = sm:queueData(payload)
     os.sleep(1)
   end
 end)
