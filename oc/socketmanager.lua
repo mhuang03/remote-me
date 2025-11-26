@@ -13,15 +13,6 @@ end
 
 local SocketManager = {}
 
-function SocketManager:new()
-  local o = {sock=nil, queue={}}
-  setmetatable(o, self)
-  self.__index = self
-  o:connect()
-  o:processQueue()
-  return o
-end
-
 function SocketManager:connect()
   local socket, reason
   repeat
@@ -65,6 +56,15 @@ function SocketManager:processQueue()
       end
     end
   end, math.huge)
+end
+
+function SocketManager:new()
+  local o = {sock=nil, queue={}}
+  setmetatable(o, self)
+  self.__index = self
+  o:connect()
+  o:processQueue()
+  return o
 end
   
 
