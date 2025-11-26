@@ -53,16 +53,11 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  if not self:isAlive() then
-    print("Connection lost. Reconnecting...")
-    self.sock:close()
-    self:connect()
-  end
-
   data = data .. "\n"
+  self.sock:write(data)
   local status, ret
   repeat
-    status, ret = pcall(self.sock.write, self.sock, data)
+    status, ret = pcall(self.sock.flush, self.sock)
     if not status then
       print("Failed to send data: " .. tostring(ret))
       print("Reconnecting...")
