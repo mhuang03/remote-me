@@ -37,11 +37,12 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  if not self.sock.stream.socket.finishConnect() then
+  local connectionAlive = self.sock.stream.socket.finishConnect()
+  print("Connection alive: " .. tostring(connectionAlive))
+  if not connectionAlive then
     print("Connection lost. Reconnecting...")
     self.sock:close()
     self:connect()
-    return false
   end
 
   data = data .. "\n"
