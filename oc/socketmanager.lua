@@ -17,7 +17,7 @@ local SocketManager = {}
 function SocketManager:connect()
   local socket, reason
   repeat
-    socket, reason = internet.connect(HOST, PORT)
+    socket, reason = internet.open(HOST, PORT)
     if reason then
       print("Failed to open TCP connection: " .. tostring(reason))
       print("Trying again in 5 seconds...")
@@ -25,11 +25,7 @@ function SocketManager:connect()
     end
   until socket
 
-  while not socket.finishConnect() do
-    os.sleep(0.1)
-  end
-
-  print("Connected.")
+  print("Connected to " .. HOST .. ":" .. PORT)
   self.sock = socket
 end
 
@@ -38,15 +34,11 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  if not self.sock then
-    self:connect()
-  end
-
-  local bytesWritten = self.sock:write(data .. "\n")
-  if bytesWritten == 0 then
-    print("Connection lost during write.")
+  local status, err = pcall(self.sock.write, self.sock, data .. "\n")
+  if not status then
+    print("Connection lost. Reconnecting...")
     self.sock:close()
-    self.sock = nil
+    self:connect()
     return false
   end
   return true
@@ -59,6 +51,7 @@ function SocketManager:processQueue()
       print("Sending payload: " .. payload)
       local success = self:sendData(payload)
       if success then
+        print("Sent successfully.")
         table.remove(self.queue, 1)
       else
         print("Sending failed.")
@@ -72,7 +65,7 @@ function SocketManager:new()
   setmetatable(o, self)
   self.__index = self
   o:connect()
-  o:processQueue()
+  -- o:processQueue()
   return o
 end
   

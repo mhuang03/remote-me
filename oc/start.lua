@@ -34,7 +34,7 @@ local t1 = thread.create(function()
   while (true) do
     local payload = getItemsData()[1]
     print("Queueing payload: " .. payload)
-    local status = sm:queueData(payload)
+    local status = sm:sendData(payload)
     os.sleep(1)
   end
 end)
