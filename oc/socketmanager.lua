@@ -24,6 +24,10 @@ function SocketManager:connect()
     end
   until socket
 
+  while not socket.stream.socket.finishConnect() do
+    os.sleep(0.1)
+  end
+
   print("Connected to " .. HOST .. ":" .. PORT)
   self.sock = socket
 end
@@ -33,14 +37,16 @@ function SocketManager:queueData(data)
 end
 
 function SocketManager:sendData(data)
-  local status, err = pcall(self.sock.write, self.sock, data .. "\n")
-  if not status then
+  if not self.sock.stream.socket.finishConnect() then
     print("Connection lost. Reconnecting...")
     self.sock:close()
     self:connect()
     return false
   end
-  return true
+
+  data = data .. "\n"
+  local status, err = pcall(self.sock.write, self.sock, data)
+  self.sock:flush()
 end
 
 function SocketManager:processQueue()
