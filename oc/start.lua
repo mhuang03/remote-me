@@ -32,8 +32,9 @@ end
 
 
 local function sendUpdate(sock)
-  local payload = getItemsData()
-  return sock:write(payload[0])
+  local payload = getItemsData()[0]
+  print("Sending payload: " .. payload)
+  return sock:write(payload)
 end
 
 
