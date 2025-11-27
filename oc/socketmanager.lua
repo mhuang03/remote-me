@@ -58,7 +58,7 @@ function SocketManager:sendData(data)
   local status, ret
   repeat
     status, ret = pcall(self.sock.flush, self.sock)
-    if not status then
+    if not status or not ret then
       print("Failed to send data: " .. tostring(ret))
       print("Reconnecting...")
       self.sock:close()

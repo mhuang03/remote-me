@@ -17,7 +17,7 @@ end
 
 
 
-local function getItemsData()
+local function getStoneDustData()
   local items = me.getItemsInNetwork({label="Stone Dust"})
   local items_enc = {}
   for k, item in pairs(items) do
@@ -28,13 +28,28 @@ end
 
 
 
+local function sendItemsData(sman)
+  sman:sendData("100")  -- start of items data
+  local itemsIter = me.allItems()
+  for chunk in itemsIter do
+    local chunk_enc = {}
+    for _, item in pairs(items) do
+      table.insert(chunk_enc, json.encode(item))
+    end
+    local jsonList = "[" .. table.concat(chunk_enc, ",") .. "]"
+    sman:sendData("101" .. jsonList)
+  end
+  sman:sendData("111")  -- end of items data
+end
+
+
+
+
 local sm = SocketManager:new()
 
 local t1 = thread.create(function()
   while (true) do
-    local payload = getItemsData()[1]
-    print("Sending payload: " .. payload)
-    local status = sm:sendData(payload)
+    sendItemsData(sm)
     os.sleep(1)
   end
 end)
